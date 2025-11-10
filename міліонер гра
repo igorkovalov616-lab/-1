@@ -1,0 +1,124 @@
+using System;
+
+struct Question
+{
+    public string Text;
+    public string[] Answers; // кожна відповідь починається з "а) ", "б) " і т.д.
+    public char Correct;     // символ правильної відповіді, наприклад 'б'
+    public int Reward;
+
+    public Question(string text, string[] answers, char correct, int reward)
+    {
+        Text = text;
+        Answers = answers;
+        Correct = correct;
+        Reward = reward;
+    }
+}
+
+class Program
+{
+    static void PlayGame()
+    {
+        Question[] quiz = new Question[]
+        {
+            new Question(
+                "Яка планета 4 від Сонця?",
+                new string[] { "а) Меркурій", "б) Марс", "в) Земля", "г) Уран" },
+                'б', 100),
+
+            new Question(
+                "Яка висота гори Еверест?",
+                new string[] { "а) 8848 м", "б) 5000 м", "в) 10000 м", "г) 7200 м" },
+                'а', 200),
+
+            new Question(
+                "Хто автор роману 'Кобзар'?",
+                new string[] { "а) Іван Франко", "б) Леся Українка", "в) Тарас Шевченко", "г) Микола Гоголь" },
+                'в', 300),
+
+            new Question(
+                "Який океан найбільший у світі?",
+                new string[] { "а) Атлантичний", "б) Індійський", "в) Північний Льодовитий", "г) Тихий" },
+                'г', 400),
+
+            new Question(
+                "Скільки континентів на Землі?",
+                new string[] { "а) 5", "б) 6", "в) 7", "г) 8" },
+                'в', 500)
+        };
+
+        int total = 0;
+        int numQuestions = quiz.Length;
+
+        Console.WriteLine("==============================");
+        Console.WriteLine("     ГРА: Як стати мільйонером");
+        Console.WriteLine("==============================");
+        Console.WriteLine();
+
+        for (int i = 0; i < numQuestions; i++)
+        {
+            Console.WriteLine($"Питання {i + 1}: {quiz[i].Text}");
+            foreach (var ans in quiz[i].Answers)
+                Console.WriteLine(ans);
+
+            Console.Write("Оберіть правильну відповідь (введіть літеру, напр. а/б/в/г): ");
+            string input = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                Console.WriteLine("Невірне введення. Спробуйте ще раз.\n");
+                i--; // повторити те ж питання
+                continue;
+            }
+
+            char answer = char.ToLower(input.Trim()[0]);
+
+            // Нормалізуємо українські літери до нижнього регістру
+            answer = char.ToLowerInvariant(answer);
+
+            if (answer == quiz[i].Correct)
+            {
+                total += quiz[i].Reward;
+                Console.WriteLine($"✅ Правильно! Ви заробили {quiz[i].Reward} очок. Загалом: {total}\n");
+            }
+            else
+            {
+                // знайдемо текст правильної відповіді
+                string correctText = "";
+                foreach (var a in quiz[i].Answers)
+                {
+                    if (!string.IsNullOrEmpty(a) && char.ToLowerInvariant(a[0]) == quiz[i].Correct)
+                    {
+                        correctText = a;
+                        break;
+                    }
+                }
+
+                Console.WriteLine($"❌ Неправильно! Ви програли. Ваш виграш: {total} очок.");
+                Console.WriteLine($"Правильна відповідь: {quiz[i].Correct}) {correctText}\n");
+                return;
+            }
+        }
+
+        Console.WriteLine("🎉 Вітаємо! Ви відповіли на всі питання.");
+        Console.WriteLine($"Ваш загальний виграш: {total} очок.\n");
+    }
+
+    static void Main()
+    {
+        while (true)
+        {
+            PlayGame();
+            Console.Write("Хочете спробувати ще раз? (y/n): ");
+            string choice = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(choice)) break;
+            char c = char.ToLower(choice.Trim()[0]);
+            if (c != 'y' && c != 'т') // 'т' для українського "так" (опціонально)
+                break;
+            Console.WriteLine();
+        }
+
+        Console.WriteLine("Дякуємо за гру! До побачення!");
+    }
+}
